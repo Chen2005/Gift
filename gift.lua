@@ -23,7 +23,7 @@ local function rename(remotename,hashedremote)
     hashedremote.Name = remotename
 end
 table.foreach(getupvalue(Fsys("RouterClient").init,4),rename)
-for i,v in pairs(Data.get_data()[tostring(game.Players.LocalPlayer)].inventory.gift) do 
+for i,v in pairs(Data.get_data()[tostring(game.Players.LocalPlayer)].inventory.gifts) do 
     if v.kind == "lunar_2024_special_lunar_new_year_gift_box" then 
       Counter = Counter + 1 
     task.wait(0.1)
