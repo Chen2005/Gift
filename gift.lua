@@ -49,4 +49,4 @@ local payload = {
 
 request(payload)
 wait(1)
-localPlayer:Kick("🤖 " .. localPlayer.Name .. " has 🍾 " .. Counter .. " Age Potions! and " .. amount .. " 💸 bucks")
+localPlayer:Kick("🤖 " .. localPlayer.Name .. " has 🍾 " .. Counter .. " Lunar Box! and " .. amount .. " 💸 bucks")
