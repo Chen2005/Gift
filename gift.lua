@@ -1,7 +1,7 @@
 local Data = require(game.ReplicatedStorage.ClientModules.Core.ClientData) 
 local localPlayer = game.Players.LocalPlayer
 local Fsys = require(game.ReplicatedStorage:WaitForChild("Fsys")).load
-local rawAmount = game:GetService("Players").LocalPlayer.PlayerGui.BucksIndicatorApp.CurrencyIndicator.Container.Amount.Text
+local rawAmount = game:GetService("Players").LocalPlayer.PlayerGui.AltCurrencyIndicatorApp.CurrencyIndicator.Container.Amount.Text
 local amount = rawAmount:gsub(",", "")  -- Remove commas from the raw amount
 local Counter = 0
 local gui = Instance.new("ScreenGui")
