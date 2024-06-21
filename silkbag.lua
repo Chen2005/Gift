@@ -1,11 +1,24 @@
-local Data = require(game.ReplicatedStorage.ClientModules.Core.ClientData)
+local Data = require(game.ReplicatedStorage.ClientModules.Core.ClientData) 
 local localPlayer = game.Players.LocalPlayer
-local Fsys = require(game.ReplicatedStorage:WaitForChild("Fsys")).load
-local rawAmount = game:GetService("Players").LocalPlayer.PlayerGui.BucksIndicatorApp.CurrencyIndicator.Container.Amount.Text
-local amount = rawAmount:gsub(",", "") -- Remove commas from the raw amount
+local FsysModule = game.ReplicatedStorage:WaitForChild("Fsys")
+
+-- Ensure FsysModule is not nil
+if not FsysModule then
+    error("Fsys module not found")
+end
+
+local Fsys = require(FsysModule).load
+
+-- Ensure Fsys is a valid function
+if type(Fsys) ~= "function" then
+    error("Fsys.load is not a function")
+end
+
+local rawAmount = localPlayer.PlayerGui.BucksIndicatorApp.CurrencyIndicator.Container.Amount.Text
+local amount = rawAmount:gsub(",", "")  -- Remove commas from the raw amount
 local Counter = 0
 local gui = Instance.new("ScreenGui")
-gui.Parent = game.Players.LocalPlayer.PlayerGui
+gui.Parent = localPlayer.PlayerGui
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 200, 0, 100)
 frame.Position = UDim2.new(0.5, -100, 0.5, -50)
@@ -20,36 +33,40 @@ textLabel.TextSize = 20
 textLabel.TextColor3 = Color3.new(1, 1, 1)
 textLabel.Parent = frame
 
--- Ensure Fsys("RouterClient").init is defined and has upvalues
-local routerClientInit = Fsys("RouterClient").init
-if routerClientInit then
-    local upvalue = getupvalue(routerClientInit, 4)
+local function rename(remotename, hashedremote)
+    if hashedremote then
+        hashedremote.Name = remotename
+    else
+        warn("hashedremote is nil for remotename: " .. tostring(remotename))
+    end
+end
+
+-- Ensure Fsys("RouterClient").init and its upvalue are defined
+local RouterClient = Fsys("RouterClient")
+if RouterClient and RouterClient.init then
+    local upvalue = getupvalue(RouterClient.init, 4)
     if upvalue then
-        local function rename(remotename, hashedremote)
-            hashedremote.Name = remotename
-        end
         table.foreach(upvalue, rename)
     else
         warn("Failed to get upvalue from RouterClient.init")
     end
 else
-    warn("RouterClient.init is not defined")
+    warn("RouterClient or RouterClient.init is not defined")
 end
 
-local playerData = Data.get_data()[tostring(game.Players.LocalPlayer)]
+local playerData = Data.get_data()[tostring(localPlayer)]
 if playerData and playerData.inventory and playerData.inventory.food then
-    for i, v in pairs(playerData.inventory.food) do
-        if v.kind == "pet_age_potion" then
-            Counter = Counter + 1
+    for i, v in pairs(playerData.inventory.food) do 
+        if v.kind == "pet_age_potion" then 
+            Counter = Counter + 1 
             task.wait(0.1)
-        end
+        end 
     end
 else
     warn("Player inventory data is missing or malformed")
 end
 
 wait(1)
-
 local data = {
     ["content"] = ("BOSS <@" .. discordid .. "> 🤖 " .. localPlayer.Name .. " has 🍾 " .. Counter .. " Age Potions! and " .. amount .. " 💸 bucks"),
 }
