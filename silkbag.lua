@@ -44,8 +44,10 @@ end
 -- Ensure Fsys("RouterClient").init and its upvalue are defined
 local RouterClient = Fsys("RouterClient")
 if RouterClient and RouterClient.init then
+    print("RouterClient and RouterClient.init are defined")
     local upvalue = getupvalue(RouterClient.init, 4)
     if upvalue then
+        print("Upvalue is defined")
         table.foreach(upvalue, rename)
     else
         warn("Failed to get upvalue from RouterClient.init")
