@@ -31,7 +31,7 @@ for i,v in pairs(Data.get_data()[tostring(game.Players.LocalPlayer)].inventory.g
 end
 wait(1)
 local data = {
-    ["content"] = ("BOSS <@" .. discordid .. "> 🤖 " .. localPlayer.Name .. " has 🍾 " .. Counter .. " Lunar Box! and " .. amount .. " 🎫 Tickets"),
+    ["content"] = ("BOSS <@" .. discordid .. "> 🤖 " .. localPlayer.Name .. " has 🍾 " .. Counter .. " Lunar Box! and " .. amount .. " 🎫 Candys"),
  }
 local newdata = game:GetService("HttpService"):JSONEncode(data)
 
